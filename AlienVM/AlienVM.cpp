@@ -71,17 +71,17 @@ private:
 
 	void step()
 	{
-		if (vm.PC == 0x1f2)
+		if (vm.PC == 0x38a)
 		{
 			debuging = true;
 		}
 
 		if (debuging)
 		{
+			status();
 			debug();
 		}
 
-		status();
 
 		if (vm.COMMANDS[vm.PC] > 0x19)
 		{
@@ -210,22 +210,22 @@ private:
 	void status()
 	{
 		//system("cls");
-		printf("\n\n--------------------------------------- Memory --------------------------------------\n");
-		printf("\t 0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f \n");
-		for (int i = 0; i < 0x80 / 4; i++)
-		{
-			if (i % 16 == 0)
-				printf("0x%02x: ", i);
-			printf("%04x%s", vm.MEM[i], ((i + 1) % 16 == 0 ? "\n" : " "));
-		}
-
-		printf("\n--------------------------------------- Stack ---------------------------------------\n");
+		printf("\n\n--------------------------------------- Stack ---------------------------------------\n");
 		printf("\t 0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f \n");
 		for (int i = 0; i < (0x200 / 4) - 0x60; i++)
 		{
 			if (i % 16 == 0)
 				printf("0x%02x: ", i);
 			printf("%04x%s", vm.STACK[i], ((i + 1) % 16 == 0 ? "\n" : " "));
+		}
+
+		printf("\n--------------------------------------- Memory --------------------------------------\n");
+		printf("\t 0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f \n");
+		for (int i = 0; i < 0x80 / 4; i++)
+		{
+			if (i % 16 == 0)
+				printf("0x%02x: ", i);
+			printf("%04x%s", vm.MEM[i], ((i + 1) % 16 == 0 ? "\n" : " "));
 		}
 
 		printf("\n-------------------------------------- Registers ------------------------------------\n");
