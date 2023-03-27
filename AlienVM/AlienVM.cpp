@@ -91,9 +91,9 @@ private:
 
 		switch (vm.COMMANDS[vm.PC])
 		{
-			//case 0x00:
-			//	add();
-			//	break;
+		case 0x00:
+			add();
+			break;
 
 		case 0x01:
 			addi();
@@ -255,6 +255,12 @@ private:
 
 		switch (vm.COMMANDS[vm.PC])
 		{
+		case 0x00:
+			sprintf(decoded, "ADD\tMEM[%02x]  MEM[%02x]  ->  MEM[%02x]\n\t\t   ADD\t%02x\t %02x  ->  MEM[%02x]",
+				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1],
+				vm.MEM[vm.COMMANDS[vm.PC + 2]], vm.MEM[vm.COMMANDS[vm.PC + 3]], vm.COMMANDS[vm.PC + 1]);
+			break;
+
 		case 0x01:
 			sprintf(decoded, "ADDI\tMEM[%02x]  %02x  ->  MEM[%02x]\n\t\t   ADDI\t%02x\t %02x  ->  MEM[%02x]",
 				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1],
@@ -365,7 +371,7 @@ private:
 
 	void add() // 0x00
 	{
-		vm.MEM[vm.COMMANDS[vm.PC + 1]] = vm.COMMANDS[vm.PC + 2] + vm.COMMANDS[vm.PC + 3];
+		vm.MEM[vm.COMMANDS[vm.PC + 1]] = vm.MEM[vm.COMMANDS[vm.PC + 2]] + vm.MEM[vm.COMMANDS[vm.PC + 3]];
 
 		vm.PC += 6;
 	}
