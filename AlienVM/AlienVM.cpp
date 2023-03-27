@@ -10,6 +10,8 @@ public:
 	uint32_t* data;		// at 2 in struct // type (byte *) // 128 B
 
 	int8_t EXIT;		// at 4 in struct // type char // FLAG?
+
+	uint32_t RESULT;	// at 0x21 in struct // RESULT?
 	int16_t ZF;			// at 0x22 in struct
 	uint8_t* COMMANDS;	// at 0x24 in struct // 64 KB
 	uint32_t* STACK;	// at 0x26 in struct // 2 KB
@@ -197,7 +199,7 @@ private:
 
 	void debug()
 	{
-		cout << "debug >" << endl;
+		cout << "debug >";
 		getchar();
 	}
 
@@ -253,6 +255,15 @@ private:
 			sprintf(decoded, "ADDI\tMEM[%02x]  %02x  ->  MEM[%02x]\n\t\t   ADDI\t%02x\t %02x  ->  MEM[%02x]",
 				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1],
 				vm.data[vm.COMMANDS[vm.PC + 2]], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1]);
+			break;
+
+		case 0x09:
+			sprintf(decoded, "INV\tsyscall(0x%02x, STACK[SP-1], STACK[SP-2], STACK[SP-3])\n\t\t   INV\tsyscall(%s, %02x, %02x, %02x)",
+				vm.COMMANDS[vm.PC + 1],
+				(vm.COMMANDS[vm.PC + 1] == 0x65 ? "setgid" : "???"),
+				(vm.COMMANDS[vm.PC + 2] > 0 ? vm.STACK[vm.SP - 1] : 0),
+				(vm.COMMANDS[vm.PC + 2] > 1 ? vm.STACK[vm.SP - 2] : 0),
+				(vm.COMMANDS[vm.PC + 2] > 2 ? vm.STACK[vm.SP - 3] : 0));
 			break;
 
 		case 0x0a:
@@ -392,8 +403,28 @@ private:
 
 	void inv() // 0x09
 	{
+		// https://thevivekpandey.github.io/posts/2017-09-25-linux-system-calls.html
+		// there in the bin file is only one syscall with number 0x65 - setgid(0)
+		// That call will change Group ID of the proccess to 0, which is gid of root's group
+		// I assume it is for debugging protection purposes
+		int8_t syscall_no = vm.COMMANDS[vm.PC + 1];
+		int8_t argc = vm.COMMANDS[vm.PC + 2];
 
+		uint32_t arg1 = 0, arg2 = 0, arg3 = 0;
+		int64_t result = 0;
 
+		if (argc > 0)
+			arg1 = vm.STACK[--vm.SP];
+
+		if (argc > 1)
+			arg2 = vm.STACK[--vm.SP];
+
+		if (argc > 2)
+			arg3 = vm.STACK[--vm.SP];
+
+		//result = syscall((int64_t)syscall_no, (uint64_t)arg1, (uint64_t)arg2, (uint64_t)arg3);
+
+		vm.RESULT = result;
 		vm.PC += 6;
 	}
 
