@@ -119,9 +119,9 @@ private:
 			//	div();
 			//	break;
 
-			//case 0x07:
-			//	cmp();
-			//	break;
+		case 0x07:
+			cmp();
+			break;
 
 			//case 0x08:
 			//	jmp();
@@ -195,6 +195,10 @@ private:
 			debuging = true;
 		}
 
+		if (vm.COMMANDS[vm.PC - 6] != 0x07)
+		{ // last command not cmp
+			vm.ZF = 0;
+	}
 	}
 
 	void debug()
@@ -226,8 +230,8 @@ private:
 
 		printf("\n-------------------------------------- Registers ------------------------------------\n");
 		printf("PC: 0x%02x\n", vm.PC);
-		printf("ZF: 0x%02x\n", vm.ZF);
 		printf("SP: 0x%02x\n", vm.SP);
+		printf("ZF: 0x%02x\n", vm.ZF);
 
 		printf("\n---------------------------------------- Code ---------------------------------------\n");
 		for (int i = 0; i < 6; i++)
@@ -267,6 +271,10 @@ private:
 			sprintf(decoded, "MULI\tMEM[%02x]  %02x  ->  MEM[%02x]\n\t\t   MULI\t%02x\t %02x  ->  MEM[%02x]",
 				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1],
 				vm.MEM[vm.COMMANDS[vm.PC + 2]], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1]);
+			break;
+
+		case 0x07:
+			sprintf(decoded, "CMP\t%02x  %02x", vm.COMMANDS[vm.PC + 1], vm.COMMANDS[vm.PC + 2]);
 			break;
 
 		case 0x09:
