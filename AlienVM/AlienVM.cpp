@@ -241,6 +241,10 @@ private:
 		printf("%s\n", decode());
 
 		printf("\n");
+
+		FILE* memfile = _fsopen("memfile.bin", "w+b", _SH_DENYNO);
+		fwrite(vm.COMMANDS, 1, 0x10000, memfile);
+		fclose(memfile);
 	}
 
 	char* decode()
@@ -256,35 +260,35 @@ private:
 		switch (vm.COMMANDS[vm.PC])
 		{
 		case 0x00:
-			sprintf(decoded, "ADD\tMEM[%02x]  MEM[%02x]  ->  MEM[%02x]\n\t\t   ADD\t%02x\t %02x  ->  MEM[%02x]",
+			sprintf(decoded, "ADD\t\tMEM[%02x]  MEM[%02x]  ->  MEM[%02x]\n\t\t   ADD\t\t%02x\t %02x\t  ->  MEM[%02x]",
 				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1],
 				vm.MEM[vm.COMMANDS[vm.PC + 2]], vm.MEM[vm.COMMANDS[vm.PC + 3]], vm.COMMANDS[vm.PC + 1]);
 			break;
 
 		case 0x01:
-			sprintf(decoded, "ADDI\tMEM[%02x]  %02x  ->  MEM[%02x]\n\t\t   ADDI\t%02x\t %02x  ->  MEM[%02x]",
+			sprintf(decoded, "ADDI\t\tMEM[%02x]  %02x  ->  MEM[%02x]\n\t\t   ADDI\t\t%02x\t %02x  ->  MEM[%02x]",
 				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1],
 				vm.MEM[vm.COMMANDS[vm.PC + 2]], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1]);
 			break;
 
 		case 0x04:
-			sprintf(decoded, "MUL\tMEM[%02x]  MEM[%02x]  ->  MEM[%02x]\n\t\t   MUL\t%02x\t %02x  ->  MEM[%02x]",
+			sprintf(decoded, "MUL\t\tMEM[%02x]  MEM[%02x]  ->  MEM[%02x]\n\t\t   MUL\t\t%02x\t %02x  ->  MEM[%02x]",
 				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1],
 				vm.MEM[vm.COMMANDS[vm.PC + 2]], vm.MEM[vm.COMMANDS[vm.PC + 3]], vm.COMMANDS[vm.PC + 1]);
 			break;
 
 		case 0x05:
-			sprintf(decoded, "MULI\tMEM[%02x]  %02x  ->  MEM[%02x]\n\t\t   MULI\t%02x\t %02x  ->  MEM[%02x]",
+			sprintf(decoded, "MULI\t\tMEM[%02x]  %02x  ->  MEM[%02x]\n\t\t   MULI\t\t%02x\t %02x  ->  MEM[%02x]",
 				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1],
 				vm.MEM[vm.COMMANDS[vm.PC + 2]], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1]);
 			break;
 
 		case 0x07:
-			sprintf(decoded, "CMP\t%02x  %02x", vm.COMMANDS[vm.PC + 1], vm.COMMANDS[vm.PC + 2]);
+			sprintf(decoded, "CMP\t\t%02x  %02x", vm.COMMANDS[vm.PC + 1], vm.COMMANDS[vm.PC + 2]);
 			break;
 
 		case 0x09:
-			sprintf(decoded, "INV\tsyscall(0x%02x, STACK[SP-1], STACK[SP-2], STACK[SP-3])\n\t\t   INV\tsyscall(%s, %02x, %02x, %02x)",
+			sprintf(decoded, "INV\t\tsyscall(0x%02x, STACK[SP-1], STACK[SP-2], STACK[SP-3])\n\t\t   INV\t\tsyscall(%s, %02x, %02x, %02x)",
 				vm.COMMANDS[vm.PC + 1],
 				(vm.COMMANDS[vm.PC + 1] == 0x65 ? "setgid" : "???"),
 				(vm.COMMANDS[vm.PC + 2] > 0 ? vm.STACK[vm.SP - 1] : 0),
@@ -293,15 +297,15 @@ private:
 			break;
 
 		case 0x0a:
-			sprintf(decoded, "PUSH\tMEM[%02x]\n\t\t   PUSH\t%02x", vm.COMMANDS[vm.PC + 1], vm.MEM[vm.COMMANDS[vm.PC + 1]]);
+			sprintf(decoded, "PUSH\t\tMEM[%02x]\n\t\t   PUSH\t\t%02x", vm.COMMANDS[vm.PC + 1], vm.MEM[vm.COMMANDS[vm.PC + 1]]);
 			break;
 
 		case 0x0b:
-			sprintf(decoded, "POP\tMEM[%02x]", vm.COMMANDS[vm.PC + 1]);
+			sprintf(decoded, "POP\t\tMEM[%02x]", vm.COMMANDS[vm.PC + 1]);
 			break;
 
 		case 0x0c:
-			sprintf(decoded, "MOV\tMEM[%02x]  %02x",
+			sprintf(decoded, "MOV\t\tMEM[%02x]  %02x",
 				vm.COMMANDS[vm.PC + 1], *(uint32_t*)(vm.COMMANDS + vm.PC + 2));
 			break;
 
@@ -314,47 +318,47 @@ private:
 			break;
 
 		case 0x10:
-			sprintf(decoded, "PUTC\t'%c'", (vm.COMMANDS[vm.PC + 1] != '\n' ? (char)vm.COMMANDS[vm.PC + 1] : '\\n'));
+			sprintf(decoded, "PUTC\t\t'%c'", (vm.COMMANDS[vm.PC + 1] != '\n' ? (char)vm.COMMANDS[vm.PC + 1] : '\\n'));
 			break;
 
 		case 0x11:
-			sprintf(decoded, "JE\tMEM[%02x]  MEM[%02x]  ->  CODE[%02x]\n\t\t   JE\t%02x\t %02x\t  ->  CODE[%02x]",
+			sprintf(decoded, "JE\t\tMEM[%02x]  MEM[%02x]  ->  CODE[%02x]\n\t\t   JE\t\t%02x\t %02x\t  ->  CODE[%02x]",
 				vm.COMMANDS[vm.PC + 1], (uint32_t)vm.COMMANDS[vm.PC + 2], ((int16_t)vm.COMMANDS[vm.PC + 3]) * 6,
 				vm.MEM[vm.COMMANDS[vm.PC + 1]], vm.MEM[vm.COMMANDS[vm.PC + 2]], ((int16_t)vm.COMMANDS[vm.PC + 3]) * 6);
 			break;
 
 		case 0x12:
-			sprintf(decoded, "JNE\tMEM[%02x]  MEM[%02x]  ->  CODE[%02x]\n\t\t   JNE\t%02x\t %02x\t  ->  CODE[%02x]",
+			sprintf(decoded, "JNE\t\tMEM[%02x]  MEM[%02x]  ->  CODE[%02x]\n\t\t   JNE\t\t%02x\t %02x\t  ->  CODE[%02x]",
 				vm.COMMANDS[vm.PC + 1], (uint32_t)vm.COMMANDS[vm.PC + 2], ((int16_t)vm.COMMANDS[vm.PC + 3]) * 6,
 				vm.MEM[vm.COMMANDS[vm.PC + 1]], vm.MEM[vm.COMMANDS[vm.PC + 2]], ((int16_t)vm.COMMANDS[vm.PC + 3]) * 6);
 			break;
 
 		case 0x13:
-			sprintf(decoded, "JLE\tMEM[%02x]  MEM[%02x]  ->  CODE[%02x]\n\t\t   JLE\t%02x\t %02x\t  ->  CODE[%02x]",
+			sprintf(decoded, "JLE\t\tMEM[%02x]  MEM[%02x]  ->  CODE[%02x]\n\t\t   JLE\t\t%02x\t %02x\t  ->  CODE[%02x]",
 				vm.COMMANDS[vm.PC + 1], (uint32_t)vm.COMMANDS[vm.PC + 2], ((int16_t)vm.COMMANDS[vm.PC + 3]) * 6,
 				vm.MEM[vm.COMMANDS[vm.PC + 1]], vm.MEM[vm.COMMANDS[vm.PC + 2]], ((int16_t)vm.COMMANDS[vm.PC + 3]) * 6);
 			break;
 
 		case 0x14:
-			sprintf(decoded, "JGE\tMEM[%02x]  MEM[%02x]  ->  CODE[%02x]\n\t\t   JGE\t%02x\t %02x\t  ->  CODE[%02x]",
+			sprintf(decoded, "JGE\t\tMEM[%02x]  MEM[%02x]  ->  CODE[%02x]\n\t\t   JGE\t\t%02x\t %02x\t  ->  CODE[%02x]",
 				vm.COMMANDS[vm.PC + 1], (uint32_t)vm.COMMANDS[vm.PC + 2], ((int16_t)vm.COMMANDS[vm.PC + 3]) * 6,
 				vm.MEM[vm.COMMANDS[vm.PC + 1]], vm.MEM[vm.COMMANDS[vm.PC + 2]], ((int16_t)vm.COMMANDS[vm.PC + 3]) * 6);
 			break;
 
 		case 0x15:
-			sprintf(decoded, "XOR\tMEM[%02x]  MEM[%02x]  ->   MEM[%02x]\n\t\t   XOR\t%02x\t %02x\t  ->   MEM[%02x]",
+			sprintf(decoded, "XOR\t\tMEM[%02x]  MEM[%02x]  ->   MEM[%02x]\n\t\t   XOR\t\t%02x\t %02x\t  ->   MEM[%02x]",
 				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3],
 				vm.COMMANDS[vm.PC + 1], vm.MEM[vm.COMMANDS[vm.PC + 2]], vm.MEM[vm.COMMANDS[vm.PC + 3]], vm.COMMANDS[vm.PC + 1]);
 			break;
 
 		case 0x16:
-			sprintf(decoded, "STORE\tCODE[MEM[%02x]]  MEM[%02x]\n\t\t   STORE\tCODE[%02x]      %02x",
+			sprintf(decoded, "STORE\tCODE[MEM[%02x]]\tMEM[%02x]\n\t\t   STORE\tCODE[%02x]\t%02x",
 				vm.COMMANDS[vm.PC + 1], vm.COMMANDS[vm.PC + 2], *(int32_t*)(vm.MEM + vm.COMMANDS[vm.PC + 1]),
 				vm.MEM[vm.COMMANDS[vm.PC + 2]]);
 			break;
 
 		case 0x17:
-			sprintf(decoded, "LOAD\tMEM[%02x]  CODE[MEM[%02x]]\n\t\t   LOAD\tMEM[%02x]\t CODE[%02x]\n\t\t   LOAD\tMEM[%02x]  %02x",
+			sprintf(decoded, "LOAD\t\tMEM[%02x]  CODE[MEM[%02x]]\n\t\t   LOAD\t\tMEM[%02x]\t CODE[%02x]\n\t\t   LOAD\t\tMEM[%02x]  %02x",
 				vm.COMMANDS[vm.PC + 1], vm.COMMANDS[vm.PC + 2],
 				vm.COMMANDS[vm.PC + 1], vm.MEM[vm.COMMANDS[vm.PC + 2]],
 				vm.COMMANDS[vm.PC + 1], vm.COMMANDS[vm.MEM[vm.COMMANDS[vm.PC + 2]]]);
