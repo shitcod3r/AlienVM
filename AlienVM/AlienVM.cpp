@@ -198,7 +198,7 @@ private:
 		if (vm.COMMANDS[vm.PC - 6] != 0x07)
 		{ // last command not cmp
 			vm.ZF = 0;
-	}
+		}
 	}
 
 	void debug()
@@ -463,6 +463,11 @@ private:
 
 		vm.RESULT = result;
 		vm.PC += 6;
+
+		// clear the memory after syscall to bypass assumed setgid(0) debugging protection
+		delete vm.MEM;
+		vm.MEM = (uint32_t*)calloc(0x80, 1);
+
 	}
 
 	void push() // 0x0a
