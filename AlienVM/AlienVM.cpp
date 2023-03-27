@@ -107,13 +107,13 @@ private:
 			//	subi();
 			//	break;
 
-			//case 0x04:
-			//	mul();
-			//	break;
+		case 0x04:
+			mul();
+			break;
 
-			//case 0x05:
-			//	muli();
-			//	break;
+		case 0x05:
+			muli();
+			break;
 
 			//case 0x06:
 			//	div();
@@ -257,6 +257,18 @@ private:
 				vm.MEM[vm.COMMANDS[vm.PC + 2]], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1]);
 			break;
 
+		case 0x04:
+			sprintf(decoded, "MUL\tMEM[%02x]  MEM[%02x]  ->  MEM[%02x]\n\t\t   MUL\t%02x\t %02x  ->  MEM[%02x]",
+				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1],
+				vm.MEM[vm.COMMANDS[vm.PC + 2]], vm.MEM[vm.COMMANDS[vm.PC + 3]], vm.COMMANDS[vm.PC + 1]);
+			break;
+
+		case 0x05:
+			sprintf(decoded, "MULI\tMEM[%02x]  %02x  ->  MEM[%02x]\n\t\t   MULI\t%02x\t %02x  ->  MEM[%02x]",
+				vm.COMMANDS[vm.PC + 2], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1],
+				vm.MEM[vm.COMMANDS[vm.PC + 2]], vm.COMMANDS[vm.PC + 3], vm.COMMANDS[vm.PC + 1]);
+			break;
+
 		case 0x09:
 			sprintf(decoded, "INV\tsyscall(0x%02x, STACK[SP-1], STACK[SP-2], STACK[SP-3])\n\t\t   INV\tsyscall(%s, %02x, %02x, %02x)",
 				vm.COMMANDS[vm.PC + 1],
@@ -369,12 +381,16 @@ private:
 
 	void mul() // 0x04
 	{
+		vm.MEM[vm.COMMANDS[vm.PC + 1]] = vm.MEM[vm.COMMANDS[vm.PC + 2]] * vm.MEM[vm.COMMANDS[vm.PC + 3]];
 
+		vm.PC += 6;
 	}
 
 	void muli() // 0x05
 	{
+		vm.MEM[vm.COMMANDS[vm.PC + 1]] = vm.MEM[vm.COMMANDS[vm.PC + 2]] * vm.COMMANDS[vm.PC + 3];
 
+		vm.PC += 6;
 	}
 
 	void div() // 0x06
