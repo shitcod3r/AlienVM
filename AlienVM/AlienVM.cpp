@@ -135,17 +135,17 @@ private:
 			push();
 			break;
 
-			//case 0x0b:
-			//	pop();
-			//	break;
+		case 0x0b:
+			pop();
+			break;
 
 		case 0x0c:
 			mov();
 			break;
 
-			//case 0x0d:
-			//	nop();
-			//	break;
+		case 0x0d:
+			nop();
+			break;
 
 		case 0x0e:
 			exitt();
@@ -303,6 +303,10 @@ private:
 		case 0x0c:
 			sprintf(decoded, "MOV\tMEM[%02x]  %02x",
 				vm.COMMANDS[vm.PC + 1], *(uint32_t*)(vm.COMMANDS + vm.PC + 2));
+			break;
+
+		case 0x0d:
+			sprintf(decoded, "NOP");
 			break;
 
 		case 0x0e:
