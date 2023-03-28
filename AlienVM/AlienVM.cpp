@@ -2,7 +2,7 @@
 
 using namespace std;
 
-struct VM // size should be 0xa8 == 42x int8
+struct VM // size should be 0xa8 == 42x int32
 {
 public:
 	int16_t PC;			// at 0 in struct // type ?
@@ -24,7 +24,7 @@ private:
 	VM vm;
 	const char* keycode = "c0d3_r3d_5hutd0wn";
 	const char* secret_phrase = "HTB{5w1rl_4r0und_7h3_4l13n_l4ngu4g3}";
-	bool debuging = false;
+	bool debugging = false;
 
 	int positions[0x24] = { 0x13, 0x19, 0x0F, 0x0A, 0x07, 0x00, 0x1D, 0x0E, 0x16,
 					0x10, 0x0C, 0x01, 0x0B, 0x1F, 0x18, 0x14, 0x08, 0x09,
@@ -54,7 +54,7 @@ public:
 			exit(-1);
 		}
 
-		// skiping first 3 - 'UwU' bytes of the file
+		// skip first 3 - 'UwU' bytes of the file
 		memcpy(vm.COMMANDS, (uint8_t*)_commands + 3, _commands_size - 3);
 
 
@@ -144,10 +144,10 @@ private:
 		//if (vm.PC == 0x450) // swap again
 		//if (vm.PC == 0x45c) // swap again
 		//{
-		//	debuging = true;
+		//	debugging = true;
 		//}
 
-		if (debuging)
+		if (debugging)
 		{
 			status();
 			debug();
@@ -263,7 +263,7 @@ private:
 			break;
 
 		default:
-			debuging = true;
+			debugging = true;
 		}
 
 		if (vm.COMMANDS[vm.PC - 6] != 0x07)
