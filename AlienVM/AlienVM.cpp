@@ -23,6 +23,7 @@ class AlienVirtualMachine
 private:
 	VM vm;
 	const char* keycode = "c0d3_r3d_5hutd0wn";
+	const char* secret_phrase = "HTB{5w1rl_4r0und_7h3_4l13n_l4ngu4g3}";
 	bool debuging = false;
 
 	int positions[0x24] = { 0x13, 0x19, 0x0F, 0x0A, 0x07, 0x00, 0x1D, 0x0E, 0x16,
@@ -132,16 +133,19 @@ public:
 		}
 
 		cout << flag << endl;
-		}
+	}
 
 private:
 
+
 	void step()
 	{
-		if (vm.PC == 0x38a)
-		{
-			debuging = true;
-		}
+		//if (vm.PC == 0x38a) // beginning of the secret phrase swapping
+		//if (vm.PC == 0x450) // swap again
+		//if (vm.PC == 0x45c) // swap again
+		//{
+		//	debuging = true;
+		//}
 
 		if (debuging)
 		{
@@ -646,7 +650,7 @@ private:
 
 	void input() // 0x18
 	{
-		cout << "> ";
+		//cout << "> ";
 		int x = getchar();
 		//unsigned char x = 0x63;
 
